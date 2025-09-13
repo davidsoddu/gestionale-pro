@@ -307,7 +307,7 @@
                     <ol class="list-decimal list-inside space-y-3">
                         <li><strong>Inserisci i Dati Aziendali:</strong> Parti da qui. Compila le informazioni della tua azienda, le posizioni contributive e, soprattutto, la scadenza del <strong>DURC</strong>. L'app inizierà subito a monitorarla per te.</li>
                         <li><strong>Aggiungi i tuoi Dipendenti:</strong> Vai nella sezione "Gestione Dipendenti" e crea una scheda per ogni tuo lavoratore. Inserisci i dati del contratto, le scadenze delle visite mediche e gli attestati. L'app terrà traccia di tutte queste scadenze.</li>
-                        <li><strong>Usa la Giornaliera ogni giorno:</strong> Questa è la parte operativa. Ogni giorno, entra nella sezione "Giornaliera", seleziona la data e indica lo stato di ogni dipendente (`Presente`, `Malattia`, `Ferie`, ecc.). Questo diventerà il tuo registro presenze digitale.</li>
+                        <li><strong>Usa la Giornaliera ogni giorno:</strong> Questa è la parte operativa. Ogni giorno, entra nella sezione "Giornaliera", seleziona la data e indica lo stato di ogni dipendente (`Presente`, `Malattia`, `Ferie`, ecc.). Se è presente, non dimenticare di inserire le ore lavorate!</li>
                         <li><strong>Genera i Report a fine mese:</strong> A fine mese, vai nella sezione "Report", scegli l'intervallo di date e genera il riepilogo. Otterrai una tabella perfetta da usare per elaborare le buste paga.</li>
                     </ol>
                 </div>
@@ -573,7 +573,7 @@
         window.removeVisit = (id) => { currentEmployeeVisits = currentEmployeeVisits.filter(v => v.id !== id); renderMedicalVisits(); };
         window.removeCert = (id) => { currentEmployeeCerts = currentEmployeeCerts.filter(c => c.id !== id); renderCerts(); };
 
-        // --- LOGICA GIORNALIERA (AGGIORNATA) ---
+        // --- LOGICA GIORNALIERA (AGGIORNATA CON ORE) ---
         const dailyLogDateInput = document.getElementById('daily-log-date');
         const dailyLogContainer = document.getElementById('daily-log-container');
         const saveDailyLogBtn = document.getElementById('save-daily-log-btn');
@@ -606,11 +606,20 @@
                             <select class="form-input w-full p-2 rounded-md" data-field="status">${statusOptions}</select>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="hours-field" style="display: ${empData.status === 'Presente' ? 'block' : 'none'};"><label class="block text-sm font-medium mb-1">Ore Lavorate</label><input type="number" step="0.5" class="form-input w-full p-2 rounded-md" data-field="hours" value="${empData.hours || ''}" placeholder="Es. 8"></div>
                         <div><label class="block text-sm font-medium mb-1">Forf. Mensile Netto</label><input type="number" class="form-input w-full p-2 rounded-md" data-field="monthlyFlat" value="${empData.monthlyFlat || ''}" placeholder="€"></div>
                         <div><label class="block text-sm font-medium mb-1">Acconto</label><input type="number" class="form-input w-full p-2 rounded-md" data-field="advance" value="${empData.advance || ''}" placeholder="€"></div>
                     </div>
                 `;
+                
+                const statusSelect = logCard.querySelector('[data-field="status"]');
+                const hoursField = logCard.querySelector('.hours-field');
+
+                statusSelect.addEventListener('change', (e) => {
+                    hoursField.style.display = e.target.value === 'Presente' ? 'block' : 'none';
+                });
+
                 dailyLogContainer.appendChild(logCard);
             });
         }
@@ -631,6 +640,7 @@
                 const empId = card.dataset.employeeId;
                 dailyLogs[selectedDate][empId] = {
                     status: card.querySelector('[data-field="status"]').value,
+                    hours: card.querySelector('[data-field="hours"]').value,
                     monthlyFlat: card.querySelector('[data-field="monthlyFlat"]').value,
                     advance: card.querySelector('[data-field="advance"]').value,
                 };
@@ -642,7 +652,7 @@
             setTimeout(() => feedback.classList.add('opacity-0'), 2000);
         });
 
-        // --- LOGICA REPORT (AGGIORNATA) ---
+        // --- LOGICA REPORT (AGGIORNATA CON ORE) ---
         const generateReportBtn = document.getElementById('generate-report-btn');
         const printReportBtn = document.getElementById('print-report-btn');
         const reportOutputContainer = document.getElementById('report-output-container');
@@ -683,6 +693,7 @@
                                 <th class="text-left">Dipendente</th>
                                 ${daysInMonth.map(d => `<th class="text-center">${d.getDate()}</th>`).join('')}
                                 <th class="text-center">Tot. Giorni</th>
+                                <th class="text-center">Tot. Ore</th>
                                 <th class="text-right">Forfait Netto (€)</th>
                                 <th class="text-right">Acconti (€)</th>
                                 <th class="text-right">Saldo (€)</th>
@@ -692,10 +703,11 @@
                 `;
 
                 if (employees.length === 0) {
-                     reportHTML += `<tr><td colspan="${daysInMonth.length + 5}" class="text-center p-4">Nessun dipendente inserito.</td></tr>`;
+                     reportHTML += `<tr><td colspan="${daysInMonth.length + 6}" class="text-center p-4">Nessun dipendente inserito.</td></tr>`;
                 } else {
                     employees.forEach(emp => {
                         let totalDays = 0;
+                        let totalHours = 0;
                         let totalAdvance = 0;
                         let monthlyNet = 0;
                         
@@ -708,6 +720,7 @@
                                 daysHTML += `<td class="text-center font-semibold">${statusMap[log.status] || ''}</td>`;
                                 if(log.status === 'Presente'){
                                     totalDays++;
+                                    totalHours += parseFloat(log.hours || 0);
                                     totalAdvance += parseFloat(log.advance || 0);
                                     const flatRate = parseFloat(log.monthlyFlat || 0);
                                     if (flatRate > 0) {
@@ -726,6 +739,7 @@
                                 <td class="font-medium">${emp.name}</td>
                                 ${daysHTML}
                                 <td class="text-center font-bold">${totalDays}</td>
+                                <td class="text-center font-bold">${totalHours.toFixed(2)}</td>
                                 <td class="text-right">${monthlyNet > 0 ? monthlyNet.toFixed(2) : '0.00'}</td>
                                 <td class="text-right">${totalAdvance.toFixed(2)}</td>
                                 <td class="text-right font-bold">${balance.toFixed(2)}</td>
@@ -736,7 +750,6 @@
 
                 reportHTML += `</tbody></table>`;
                 
-                // Aggiungi la legenda
                 reportHTML += `<div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 text-xs">
                     <span class="font-bold">Legenda:</span> 
                     ${Object.entries(statusMap).map(([key, value]) => `<strong>${value}</strong> = ${key}`).join(', ')}
