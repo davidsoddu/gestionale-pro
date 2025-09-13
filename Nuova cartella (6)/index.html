@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="it" class=""> <!-- La classe 'dark' verrà aggiunta qui da JS -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionale Edile Pro</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Icone (Lucide Icons) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Stile per un aspetto più pulito e professionale con variabili per il tema */
+        :root {
+            --bg-color: #f3f4f6;
+            --text-color-primary: #1f2937;
+            --text-color-secondary: #4b5563;
+            --card-bg: #ffffff;
+            --input-bg: #ffffff;
+            --input-border: #d1d5db;
+            --header-gradient-start: #1e3a8a;
+            --header-gradient-end: #3b82f6;
+            --alert-bg: #fef2f2;
+            --alert-border: #ef4444;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --btn-primary-bg: #2563eb;
+            --btn-primary-hover-bg: #1d4ed8;
+            --btn-secondary-bg: #e5e7eb;
+            --btn-secondary-hover-bg: #d1d5db;
+            --btn-secondary-text: #374151;
+        }
+
+        html.dark {
+            --bg-color: #111827;
+            --text-color-primary: #f9fafb;
+            --text-color-secondary: #9ca3af;
+            --card-bg: #1f2937;
+            --input-bg: #374151;
+            --input-border: #4b5563;
+            --header-gradient-start: #1f2937;
+            --header-gradient-end: #374151;
+            --alert-bg: #2b1c1c;
+            --alert-border: #ef4444;
+            --shadow-color: rgba(0, 0, 0, 0.4);
+            --btn-primary-bg: #3b82f6;
+            --btn-primary-hover-bg: #2563eb;
+            --btn-secondary-bg: #374151;
+            --btn-secondary-hover-bg: #4b5563;
+            --btn-secondary-text: #f9fafb;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color-primary);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .main-header {
+            background: linear-gradient(to right, var(--header-gradient-start), var(--header-gradient-end));
+        }
+        .card {
+            background-color: var(--card-bg);
+            box-shadow: 0 4px 6px -1px var(--shadow-color), 0 2px 4px -1px var(--shadow-color);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, background-color 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px var(--shadow-color), 0 4px 6px -2px var(--shadow-color);
+        }
+        .alert-card {
+            background-color: var(--alert-bg);
+            border-left: 4px solid var(--alert-border);
+        }
+        .alert-card .font-semibold { color: var(--text-color-primary); }
+        .alert-card .text-sm { color: var(--text-color-secondary); }
+        .text-muted { color: var(--text-color-secondary); }
+        
+        /* Stili per i form */
+        .form-section { background-color: var(--card-bg); }
+        .form-input {
+            background-color: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--text-color-primary);
+        }
+        .form-input:focus {
+            outline: 2px solid var(--btn-primary-bg);
+            outline-offset: -1px;
+            border-color: var(--btn-primary-bg);
+        }
+        .btn-primary {
+            background-color: var(--btn-primary-bg);
+            color: white;
+            transition: background-color 0.2s;
+        }
+        .btn-primary:hover { background-color: var(--btn-primary-hover-bg); }
+        .btn-secondary {
+            background-color: var(--btn-secondary-bg);
+            color: var(--btn-secondary-text);
+            transition: background-color 0.2s;
+        }
+        .btn-secondary:hover { background-color: var(--btn-secondary-hover-bg); }
+
+
+        /* Nasconde le sezioni non attive */
+        .page-section { display: none; }
+        .page-section.active { display: block; }
+
+    </style>
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="">
+
+    <!-- Header Principale -->
+    <header class="main-header text-white shadow-md p-4 flex justify-between items-center sticky top-0 z-10">
+        <div class="flex items-center space-x-4">
+            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgERNEntfJzdqXPnfNaiIc73y62_Sfjwka8XFKBOn7KQB9Dws366x2YgjEjgN2nCU4cNVEgQXGBBjEvotDlITUvofTLR_28IPOnZ8zjju-Tx7dyHLhyQf3xKyHELgeAABLUc0MCp_KXNn_CdvAPNT0Ixx46s4AoU3eJthn5vcsVOYm8EApFODQMCtueiH0/s320/Mondoimprese%20logo%20nero.png" 
+                 alt="Logo Mondoimprese" class="h-12 w-12 bg-white p-1 rounded-full"
+                 onerror="this.style.display='none'">
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold">Gestionale Edile Pro</h1>
+                <p class="text-xs text-gray-300 font-light">BY MONDOIMPRESE</p>
+            </div>
+        </div>
+        <button id="theme-toggle" class="p-2 rounded-full hover:bg-white/20">
+            <i data-lucide="moon" class="block dark:hidden"></i>
+            <i data-lucide="sun" class="hidden dark:block"></i>
+        </button>
+    </header>
+
+    <!-- Contenuto Principale -->
+    <main class="p-4 sm:p-6 md:p-8">
+
+        <!-- SEZIONE DASHBOARD (HOME) -->
+        <div id="dashboard-section" class="page-section active">
+            <section id="promemoria" class="mb-8">
+                <h2 class="text-xl font-semibold mb-4 flex items-center"><i data-lucide="alert-triangle" class="mr-2 text-red-500 dark:text-red-400"></i>Promemoria Scadenze</h2>
+                <div id="alerts-container" class="space-y-3"></div>
+            </section>
+            <section id="menu-principale">
+                <h2 class="text-xl font-semibold mb-4">Menu Principale</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="card p-6 rounded-lg cursor-pointer" data-target="dati-aziendali-section"><div class="flex items-center text-blue-600 dark:text-blue-400 mb-3"><i data-lucide="briefcase" class="w-8 h-8 mr-4"></i><h3 class="text-lg font-bold">Dati Aziendali</h3></div><p class="text-muted text-sm">Gestisci P.IVA, INPS, INAIL e DURC.</p></div>
+                    <div class="card p-6 rounded-lg cursor-pointer" data-target="dipendenti-section"><div class="flex items-center text-green-600 dark:text-green-400 mb-3"><i data-lucide="users" class="w-8 h-8 mr-4"></i><h3 class="text-lg font-bold">Gestione Dipendenti</h3></div><p class="text-muted text-sm">Anagrafica, contratti, visite e attestati.</p></div>
+                    <div class="card p-6 rounded-lg cursor-pointer" data-target="giornaliera-section"><div class="flex items-center text-yellow-600 dark:text-yellow-400 mb-3"><i data-lucide="calendar-check" class="w-8 h-8 mr-4"></i><h3 class="text-lg font-bold">Giornaliera</h3></div><p class="text-muted text-sm">Inserisci le presenze giornaliere.</p></div>
+                    <div class="card p-6 rounded-lg cursor-pointer" data-target="report-section"><div class="flex items-center text-indigo-600 dark:text-indigo-400 mb-3"><i data-lucide="bar-chart-3" class="w-8 h-8 mr-4"></i><h3 class="text-lg font-bold">Report</h3></div><p class="text-muted text-sm">Crea e scarica report personalizzati.</p></div>
+                    <div class="card p-6 rounded-lg cursor-pointer" data-target="guida-section"><div class="flex items-center text-purple-600 dark:text-purple-400 mb-3"><i data-lucide="help-circle" class="w-8 h-8 mr-4"></i><h3 class="text-lg font-bold">Guida Rapida</h3></div><p class="text-muted text-sm">Scopri come usare l'app al meglio.</p></div>
+                </div>
+            </section>
+        </div>
+
+        <!-- SEZIONE DATI AZIENDALI -->
+        <div id="dati-aziendali-section" class="page-section">
+            <button class="back-to-dashboard mb-6 flex items-center text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline"><i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>Torna alla Dashboard</button>
+            <h2 class="text-2xl font-bold mb-6">Dati Aziendali</h2>
+            <form id="company-data-form" class="space-y-8">
+                 <div class="form-section p-6 rounded-lg shadow-md">
+                    <h3 class="text-lg font-semibold mb-4 border-b pb-2 border-gray-200 dark:border-gray-700">Informazioni Generali</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div><label for="ragione-sociale" class="block text-sm font-medium mb-1">Ragione Sociale</label><input type="text" id="ragione-sociale" class="form-input w-full rounded-md p-2" placeholder="Es. Edil Costruzioni S.R.L."></div>
+                        <div><label for="partita-iva" class="block text-sm font-medium mb-1">Partita IVA</label><input type="text" id="partita-iva" class="form-input w-full rounded-md p-2" placeholder="Es. 12345678901"></div>
+                    </div>
+                </div>
+                <div class="form-section p-6 rounded-lg shadow-md">
+                    <h3 class="text-lg font-semibold mb-4 border-b pb-2 border-gray-200 dark:border-gray-700">Posizioni Contributive</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div><label for="posizione-inps" class="block text-sm font-medium mb-1">Posizione INPS</label><input type="text" id="posizione-inps" class="form-input w-full rounded-md p-2"></div>
+                        <div><label for="posizione-inail" class="block text-sm font-medium mb-1">Posizione INAIL</label><input type="text" id="posizione-inail" class="form-input w-full rounded-md p-2"></div>
+                        <div><label for="cassa-edile" class="block text-sm font-medium mb-1">Cassa Edile / Edilcassa</label><input type="text" id="cassa-edile" class="form-input w-full rounded-md p-2"></div>
+                    </div>
+                </div>
+                <div class="form-section p-6 rounded-lg shadow-md">
+                    <h3 class="text-lg font-semibold mb-4 border-b pb-2 border-gray-200 dark:border-gray-700">DURC</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+                        <div><label for="durc-richiesta" class="block text-sm font-medium mb-1">Data Richiesta</label><input type="date" id="durc-richiesta" class="form-input w-full rounded-md p-2"></div>
+                        <div><label for="durc-scadenza" class="block text-sm font-medium mb-1">Data Scadenza</label><input type="date" id="durc-scadenza" class="form-input w-full rounded-md p-2"></div>
+                    </div>
+                    <div class="mt-4"><span class="text-sm font-medium mr-4">Stato:</span><span id="durc-status" class="px-3 py-1 text-sm font-semibold rounded-full">--</span></div>
+                </div>
+                <div class="flex justify-end items-center">
+                    <span id="save-feedback" class="text-sm text-green-600 dark:text-green-400 mr-4 opacity-0 transition-opacity">Dati salvati!</span>
+                    <button type="submit" class="btn-primary font-bold py-2 px-6 rounded-lg flex items-center"><i data-lucide="save" class="w-5 h-5 mr-2"></i>Salva Modifiche</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- SEZIONE GESTIONE DIPENDENTI -->
+        <div id="dipendenti-section" class="page-section">
+             <button class="back-to-dashboard mb-6 flex items-center text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline"><i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>Torna alla Dashboard</button>
+             <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Gestione Dipendenti</h2>
+                <button id="add-employee-btn" class="btn-primary font-bold py-2 px-4 rounded-lg flex items-center"><i data-lucide="plus" class="w-5 h-5 mr-2"></i>Aggiungi Dipendente</button>
+             </div>
+             <div id="employee-list-container" class="space-y-4"></div>
+        </div>
+
+        <!-- SEZIONE FORM DIPENDENTE (Aggiungi/Modifica) -->
+        <div id="employee-form-section" class="page-section">
+            <button class="back-to-employees mb-6 flex items-center text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline"><i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>Torna a Elenco Dipendenti</button>
+            <h2 id="employee-form-title" class="text-2xl font-bold mb-6">Nuovo Dipendente</h2>
+            <form id="employee-form" class="space-y-8">
+                <input type="hidden" id="employee-id">
+                <div class="form-section p-6 rounded-lg shadow-md">
+                    <h3 class="text-lg font-semibold mb-4 border-b pb-2 border-gray-200 dark:border-gray-700">Anagrafica</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div><label for="employee-name" class="block text-sm font-medium mb-1">Nome e Cognome</label><input type="text" id="employee-name" class="form-input w-full rounded-md p-2" required></div>
+                        <div><label for="employee-cf" class="block text-sm font-medium mb-1">Codice Fiscale</label><input type="text" id="employee-cf" class="form-input w-full rounded-md p-2"></div>
+                    </div>
+                </div>
+                <div class="form-section p-6 rounded-lg shadow-md">
+                    <h3 class="text-lg font-semibold mb-4 border-b pb-2 border-gray-200 dark:border-gray-700">Contratto</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div><label for="employee-assunzione" class="block text-sm font-medium mb-1">Data Assunzione</label><input type="date" id="employee-assunzione" class="form-input w-full rounded-md p-2"></div>
+                        <div><label for="employee-scadenza" class="block text-sm font-medium mb-1">Scadenza Contratto</label><input type="date" id="employee-scadenza" class="form-input w-full rounded-md p-2"></div>
+                    </div>
+                </div>
+                <!-- Visite Mediche -->
+                <div class="form-section p-6 rounded-lg shadow-md">
+                    <h3 class="text-lg font-semibold mb-4 border-b pb-2 border-gray-200 dark:border-gray-700">Visite Mediche</h3>
+                    <div id="medical-visits-list" class="space-y-2 mb-4"></div>
+                    <div class="flex items-end gap-4 p-2 border-t border-gray-200 dark:border-gray-600">
+                        <div class="flex-grow"><label for="new-visit-type" class="text-sm">Tipo Visita</label><input type="text" id="new-visit-type" class="form-input w-full rounded-md p-2 mt-1" placeholder="Es. Visita annuale"></div>
+                        <div class="flex-grow"><label for="new-visit-date" class="text-sm">Data</label><input type="date" id="new-visit-date" class="form-input w-full rounded-md p-2 mt-1"></div>
+                        <div class="flex-grow"><label for="new-visit-expiry" class="text-sm">Scadenza</label><input type="date" id="new-visit-expiry" class="form-input w-full rounded-md p-2 mt-1"></div>
+                        <button type="button" id="add-medical-visit-btn" class="btn-secondary font-bold py-2 px-4 rounded-lg flex-shrink-0">Aggiungi</button>
+                    </div>
+                </div>
+                <!-- Attestati -->
+                <div class="form-section p-6 rounded-lg shadow-md">
+                    <h3 class="text-lg font-semibold mb-4 border-b pb-2 border-gray-200 dark:border-gray-700">Attestati e Certificazioni</h3>
+                    <div id="certs-list" class="space-y-2 mb-4"></div>
+                    <div class="flex items-end gap-4 p-2 border-t border-gray-200 dark:border-gray-600">
+                        <div class="flex-grow"><label for="new-cert-name" class="text-sm">Nome Attestato</label><input type="text" id="new-cert-name" class="form-input w-full rounded-md p-2 mt-1" placeholder="Es. Corso sicurezza"></div>
+                        <div class="flex-grow"><label for="new-cert-date" class="text-sm">Data Rilascio</label><input type="date" id="new-cert-date" class="form-input w-full rounded-md p-2 mt-1"></div>
+                        <div class="flex-grow"><label for="new-cert-expiry" class="text-sm">Scadenza</label><input type="date" id="new-cert-expiry" class="form-input w-full rounded-md p-2 mt-1"></div>
+                        <button type="button" id="add-cert-btn" class="btn-secondary font-bold py-2 px-4 rounded-lg flex-shrink-0">Aggiungi</button>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center">
+                    <button type="button" id="delete-employee-btn" class="text-red-600 dark:text-red-400 hover:underline font-semibold hidden">Elimina Dipendente</button>
+                    <div class="flex items-center">
+                        <span id="employee-save-feedback" class="text-sm text-green-600 dark:text-green-400 mr-4 opacity-0 transition-opacity">Dipendente salvato!</span>
+                        <button type="submit" class="btn-primary font-bold py-2 px-6 rounded-lg flex items-center"><i data-lucide="save" class="w-5 h-5 mr-2"></i>Salva Dipendente</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <!-- SEZIONE GIORNALIERA -->
+        <div id="giornaliera-section" class="page-section">
+            <button class="back-to-dashboard mb-6 flex items-center text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline"><i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>Torna alla Dashboard</button>
+            <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
+                <h2 class="text-2xl font-bold">Giornaliera</h2>
+                <div class="flex items-center gap-2">
+                    <label for="daily-log-date" class="font-semibold">Data:</label>
+                    <input type="date" id="daily-log-date" class="form-input rounded-md p-2">
+                </div>
+            </div>
+            <div id="daily-log-container" class="space-y-4"></div>
+            <div class="flex justify-end items-center mt-8">
+                <span id="daily-log-save-feedback" class="text-sm text-green-600 dark:text-green-400 mr-4 opacity-0 transition-opacity">Giornaliera salvata!</span>
+                <button id="save-daily-log-btn" class="btn-primary font-bold py-2 px-6 rounded-lg flex items-center"><i data-lucide="save" class="w-5 h-5 mr-2"></i>Salva Giornaliera</button>
+            </div>
+        </div>
+        
+        <!-- SEZIONE REPORT -->
+        <div id="report-section" class="page-section">
+            <button class="back-to-dashboard mb-6 flex items-center text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline"><i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>Torna alla Dashboard</button>
+            <h2 class="text-2xl font-bold mb-6">Reportistica</h2>
+            
+            <div class="form-section p-6 rounded-lg shadow-md mb-8">
+                <h3 class="text-lg font-semibold mb-4">Genera Report Mensile</h3>
+                <div class="flex flex-col sm:flex-row items-center gap-4">
+                    <div><label for="report-start-date" class="block text-sm font-medium mb-1">Data Inizio</label><input type="date" id="report-start-date" class="form-input w-full rounded-md p-2"></div>
+                    <div><label for="report-end-date" class="block text-sm font-medium mb-1">Data Fine</label><input type="date" id="report-end-date" class="form-input w-full rounded-md p-2"></div>
+                    <button id="generate-report-btn" class="btn-primary font-bold py-2 px-4 rounded-lg mt-auto">Genera Report</button>
+                </div>
+            </div>
+
+            <div id="report-output-container" class="hidden">
+                 <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold">Risultati Report</h3>
+                    <button id="print-report-btn" class="btn-secondary font-bold py-2 px-4 rounded-lg flex items-center"><i data-lucide="printer" class="w-5 h-5 mr-2"></i>Stampa / Scarica PDF</button>
+                </div>
+                <div id="report-output" class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-4 rounded-lg shadow-inner overflow-x-auto">
+                    <!-- Il report verrà inserito qui -->
+                </div>
+            </div>
+        </div>
+
+        <!-- SEZIONE GUIDA -->
+        <div id="guida-section" class="page-section">
+            <button class="back-to-dashboard mb-6 flex items-center text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline"><i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>Torna alla Dashboard</button>
+            <h2 class="text-2xl font-bold mb-6">Guida Rapida all'Uso</h2>
+            <div class="space-y-6 text-base leading-relaxed">
+                <div class="form-section p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-semibold mb-3">🚀 Benvenuto in Gestionale Edile Pro!</h3>
+                    <p>Questa breve guida ti aiuterà a iniziare a usare l'app in modo semplice e veloce. L'obiettivo di questo strumento è di semplificarti la vita, non di complicarla!</p>
+                </div>
+                <div class="form-section p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-semibold mb-3">🎯 A cosa serve?</h3>
+                    <p>Gestionale Edile Pro è pensato per aiutarti a tenere sotto controllo tutte le scadenze e la gestione quotidiana dei tuoi dipendenti, tutto dal tuo cellulare o computer.</p>
+                </div>
+                <div class="form-section p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-semibold mb-3">⚙️ Come iniziare: Il flusso di lavoro consigliato</h3>
+                    <p class="mb-4">Per ottenere il massimo dall'app, ti consigliamo di seguire questo ordine quando inserisci i dati per la prima volta:</p>
+                    <ol class="list-decimal list-inside space-y-3">
+                        <li><strong>Inserisci i Dati Aziendali:</strong> Parti da qui. Compila le informazioni della tua azienda, le posizioni contributive e, soprattutto, la scadenza del <strong>DURC</strong>. L'app inizierà subito a monitorarla per te.</li>
+                        <li><strong>Aggiungi i tuoi Dipendenti:</strong> Vai nella sezione "Gestione Dipendenti" e crea una scheda per ogni tuo lavoratore. Inserisci i dati del contratto, le scadenze delle visite mediche e gli attestati. L'app terrà traccia di tutte queste scadenze.</li>
+                        <li><strong>Usa la Giornaliera ogni giorno:</strong> Questa è la parte operativa. Ogni giorno, entra nella sezione "Giornaliera", seleziona la data e indica lo stato di ogni dipendente (`Presente`, `Malattia`, `Ferie`, ecc.). Questo diventerà il tuo registro presenze digitale.</li>
+                        <li><strong>Genera i Report a fine mese:</strong> A fine mese, vai nella sezione "Report", scegli l'intervallo di date e genera il riepilogo. Otterrai una tabella perfetta da usare per elaborare le buste paga.</li>
+                    </ol>
+                </div>
+                <div class="form-section p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-semibold mb-3">💡 Un consiglio</h3>
+                    <p>Più sarai preciso nell'inserire i dati all'inizio, più l'app sarà utile nel tempo. Le notifiche automatiche sulle scadenze ti faranno risparmiare tempo e ti eviteranno problemi.</p>
+                    <p class="mt-2">Grazie per aver scelto Gestionale Edile Pro!</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+    
+    <!-- MODAL PER NOTIFICHE PERSONALIZZATE -->
+    <div id="custom-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-sm text-center">
+            <p id="modal-message" class="mb-6"></p>
+            <div id="modal-actions" class="flex justify-center gap-4">
+                <!-- Buttons will be injected here by JS -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Inizializza le icone Lucide
+        lucide.createIcons();
+
+        // --- SISTEMA DI NOTIFICHE PERSONALIZZATO ---
+        const modal = document.getElementById('custom-modal');
+        const modalMessage = document.getElementById('modal-message');
+        const modalActions = document.getElementById('modal-actions');
+
+        function showModal(message, buttons = [{text: 'OK', class: 'btn-primary', action: hideModal}]) {
+            modalMessage.textContent = message;
+            modalActions.innerHTML = '';
+            buttons.forEach(btnInfo => {
+                const button = document.createElement('button');
+                button.textContent = btnInfo.text;
+                button.className = `${btnInfo.class} font-bold py-2 px-4 rounded-lg`;
+                button.onclick = btnInfo.action;
+                modalActions.appendChild(button);
+            });
+            modal.classList.remove('hidden');
+        }
+
+        function hideModal() {
+            modal.classList.add('hidden');
+        }
+
+        function customAlert(message) {
+            showModal(message);
+        }
+
+        function customConfirm(message, onConfirm) {
+            showModal(message, [
+                {text: 'Annulla', class: 'btn-secondary', action: hideModal},
+                {text: 'Conferma', class: 'btn-primary', action: () => { hideModal(); onConfirm(); }}
+            ]);
+        }
+
+        // --- GESTIONE TEMA CHIARO/SCURO ---
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const htmlEl = document.documentElement;
+        const applyTheme = (theme) => { htmlEl.classList.toggle('dark', theme === 'dark'); localStorage.setItem('theme', theme); };
+        const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        applyTheme(savedTheme);
+        themeToggleBtn.addEventListener('click', () => applyTheme(htmlEl.classList.contains('dark') ? 'light' : 'dark'));
+
+        // --- GESTIONE NAVIGAZIONE PAGINE ---
+        const pageSections = document.querySelectorAll('.page-section');
+        const navLinks = document.querySelectorAll('.card[data-target]');
+        const backToDashboardBtns = document.querySelectorAll('.back-to-dashboard');
+        const addEmployeeBtn = document.getElementById('add-employee-btn');
+        const backToEmployeesBtn = document.querySelector('.back-to-employees');
+
+        function showPage(pageId, param = null) {
+            pageSections.forEach(section => section.classList.toggle('active', section.id === pageId));
+            if (pageId === 'dashboard-section') updateDashboardAlerts();
+            if (pageId === 'dipendenti-section') renderEmployeeList();
+            if (pageId === 'employee-form-section') loadEmployeeForm(param);
+            if (pageId === 'giornaliera-section') renderDailyLog();
+            window.scrollTo(0, 0);
+        }
+
+        navLinks.forEach(link => link.addEventListener('click', () => showPage(link.dataset.target)));
+        backToDashboardBtns.forEach(button => button.addEventListener('click', () => showPage('dashboard-section')));
+        addEmployeeBtn.addEventListener('click', () => showPage('employee-form-section', null));
+        backToEmployeesBtn.addEventListener('click', () => showPage('dipendenti-section'));
+
+        // --- DATABASE IN MEMORIA (localStorage) ---
+        const db = {
+            get: (key) => JSON.parse(localStorage.getItem(key) || 'null'),
+            set: (key, value) => localStorage.setItem(key, JSON.stringify(value)),
+        };
+
+        // --- LOGICA DATI AZIENDALI ---
+        const companyForm = document.getElementById('company-data-form');
+        const durcScadenzaInput = document.getElementById('durc-scadenza');
+        const durcStatusEl = document.getElementById('durc-status');
+
+        function checkDurcStatus() {
+            if (!durcScadenzaInput.value) {
+                durcStatusEl.textContent = '--';
+                durcStatusEl.className = 'px-3 py-1 text-sm font-semibold rounded-full bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200';
+                return;
+            }
+            const oggi = new Date(); oggi.setHours(0, 0, 0, 0);
+            const scadenza = new Date(durcScadenzaInput.value);
+            durcStatusEl.textContent = scadenza < oggi ? 'Scaduto' : 'Valido';
+            durcStatusEl.className = `px-3 py-1 text-sm font-semibold rounded-full ${scadenza < oggi ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' : 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'}`;
+        }
+        durcScadenzaInput.addEventListener('change', checkDurcStatus);
+        
+        companyForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const companyData = {
+                'ragione-sociale': document.getElementById('ragione-sociale').value,
+                'partita-iva': document.getElementById('partita-iva').value,
+                'posizione-inps': document.getElementById('posizione-inps').value,
+                'posizione-inail': document.getElementById('posizione-inail').value,
+                'cassa-edile': document.getElementById('cassa-edile').value,
+                'durc-richiesta': document.getElementById('durc-richiesta').value,
+                'durc-scadenza': document.getElementById('durc-scadenza').value,
+            };
+            db.set('companyData', companyData);
+            const feedback = document.getElementById('save-feedback');
+            feedback.classList.remove('opacity-0');
+            setTimeout(() => feedback.classList.add('opacity-0'), 2000);
+        });
+
+        function loadCompanyData() {
+            const companyData = db.get('companyData');
+            if (companyData) {
+                for (const key in companyData) {
+                    const input = document.getElementById(key);
+                    if (input) input.value = companyData[key];
+                }
+            }
+            checkDurcStatus();
+        }
+
+        // --- LOGICA GESTIONE DIPENDENTI ---
+        const employeeListContainer = document.getElementById('employee-list-container');
+        const employeeForm = document.getElementById('employee-form');
+        const employeeFormTitle = document.getElementById('employee-form-title');
+        const deleteEmployeeBtn = document.getElementById('delete-employee-btn');
+        let currentEmployeeVisits = [];
+        let currentEmployeeCerts = [];
+
+        function renderEmployeeList() {
+            const employees = db.get('employees') || [];
+            employeeListContainer.innerHTML = '';
+            if (employees.length === 0) {
+                employeeListContainer.innerHTML = `<p class="text-muted text-center p-4">Nessun dipendente inserito.</p>`;
+                return;
+            }
+            employees.forEach(emp => {
+                const empCard = document.createElement('div');
+                empCard.className = 'card p-4 rounded-lg flex justify-between items-center cursor-pointer';
+                empCard.dataset.id = emp.id;
+                empCard.innerHTML = `<div><p class="font-bold">${emp.name}</p><p class="text-sm text-muted">CF: ${emp.cf || 'N/D'}</p></div><i data-lucide="chevron-right"></i>`;
+                empCard.addEventListener('click', () => showPage('employee-form-section', emp.id));
+                employeeListContainer.appendChild(empCard);
+            });
+            lucide.createIcons();
+        }
+
+        function loadEmployeeForm(employeeId) {
+            employeeForm.reset();
+            currentEmployeeVisits = [];
+            currentEmployeeCerts = [];
+            deleteEmployeeBtn.classList.add('hidden');
+
+            if (employeeId) {
+                const employees = db.get('employees') || [];
+                const employee = employees.find(e => e.id === employeeId);
+                if (employee) {
+                    employeeFormTitle.textContent = 'Modifica Dipendente';
+                    document.getElementById('employee-id').value = employee.id;
+                    document.getElementById('employee-name').value = employee.name;
+                    document.getElementById('employee-cf').value = employee.cf;
+                    document.getElementById('employee-assunzione').value = employee.assunzione;
+                    document.getElementById('employee-scadenza').value = employee.scadenza;
+                    currentEmployeeVisits = employee.visits || [];
+                    currentEmployeeCerts = employee.certs || [];
+                    deleteEmployeeBtn.classList.remove('hidden');
+                }
+            } else {
+                employeeFormTitle.textContent = 'Nuovo Dipendente';
+                document.getElementById('employee-id').value = '';
+            }
+            renderMedicalVisits();
+            renderCerts();
+        }
+
+        employeeForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const employees = db.get('employees') || [];
+            const employeeData = {
+                id: document.getElementById('employee-id').value || crypto.randomUUID(),
+                name: document.getElementById('employee-name').value,
+                cf: document.getElementById('employee-cf').value,
+                assunzione: document.getElementById('employee-assunzione').value,
+                scadenza: document.getElementById('employee-scadenza').value,
+                visits: currentEmployeeVisits,
+                certs: currentEmployeeCerts,
+            };
+            
+            const existingIndex = employees.findIndex(emp => emp.id === employeeData.id);
+            if (existingIndex > -1) employees[existingIndex] = employeeData;
+            else employees.push(employeeData);
+            
+            db.set('employees', employees);
+            
+            const feedback = document.getElementById('employee-save-feedback');
+            feedback.classList.remove('opacity-0');
+            setTimeout(() => { feedback.classList.add('opacity-0'); showPage('dipendenti-section'); }, 1500);
+        });
+        
+        deleteEmployeeBtn.addEventListener('click', () => {
+             const employeeId = document.getElementById('employee-id').value;
+             customConfirm('Sei sicuro di voler eliminare questo dipendente?', () => {
+                 let employees = db.get('employees') || [];
+                 employees = employees.filter(emp => emp.id !== employeeId);
+                 db.set('employees', employees);
+                 showPage('dipendenti-section');
+             });
+        });
+
+        document.getElementById('add-medical-visit-btn').addEventListener('click', () => {
+            const type = document.getElementById('new-visit-type');
+            const date = document.getElementById('new-visit-date');
+            const expiry = document.getElementById('new-visit-expiry');
+            if (type.value && date.value) {
+                currentEmployeeVisits.push({ id: crypto.randomUUID(), type: type.value, date: date.value, expiry: expiry.value });
+                renderMedicalVisits();
+                type.value = date.value = expiry.value = '';
+            }
+        });
+        document.getElementById('add-cert-btn').addEventListener('click', () => {
+            const name = document.getElementById('new-cert-name');
+            const date = document.getElementById('new-cert-date');
+            const expiry = document.getElementById('new-cert-expiry');
+            if (name.value && date.value) {
+                currentEmployeeCerts.push({ id: crypto.randomUUID(), name: name.value, date: date.value, expiry: expiry.value });
+                renderCerts();
+                name.value = date.value = expiry.value = '';
+            }
+        });
+
+        function renderMedicalVisits() {
+            const container = document.getElementById('medical-visits-list');
+            container.innerHTML = currentEmployeeVisits.map(v => `<div class="flex justify-between items-center p-2 bg-gray-100 dark:bg-gray-700 rounded-md"><span><strong>${v.type}</strong> - Scadenza: ${v.expiry ? new Date(v.expiry).toLocaleDateString('it-IT') : 'N/D'}</span><button type="button" class="text-red-500" onclick="removeVisit('${v.id}')"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`).join('');
+            if (container.innerHTML === '') container.innerHTML = '<p class="text-muted text-sm text-center">Nessuna visita inserita.</p>';
+            lucide.createIcons();
+        }
+        function renderCerts() {
+            const container = document.getElementById('certs-list');
+            container.innerHTML = currentEmployeeCerts.map(c => `<div class="flex justify-between items-center p-2 bg-gray-100 dark:bg-gray-700 rounded-md"><span><strong>${c.name}</strong> - Scadenza: ${c.expiry ? new Date(c.expiry).toLocaleDateString('it-IT') : 'N/D'}</span><button type="button" class="text-red-500" onclick="removeCert('${c.id}')"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`).join('');
+            if (container.innerHTML === '') container.innerHTML = '<p class="text-muted text-sm text-center">Nessun attestato inserito.</p>';
+            lucide.createIcons();
+        }
+        window.removeVisit = (id) => { currentEmployeeVisits = currentEmployeeVisits.filter(v => v.id !== id); renderMedicalVisits(); };
+        window.removeCert = (id) => { currentEmployeeCerts = currentEmployeeCerts.filter(c => c.id !== id); renderCerts(); };
+
+        // --- LOGICA GIORNALIERA (AGGIORNATA) ---
+        const dailyLogDateInput = document.getElementById('daily-log-date');
+        const dailyLogContainer = document.getElementById('daily-log-container');
+        const saveDailyLogBtn = document.getElementById('save-daily-log-btn');
+
+        function renderDailyLog() {
+            const selectedDate = dailyLogDateInput.value;
+            const employees = db.get('employees') || [];
+            const dailyLogs = db.get('dailyLogs') || {};
+            const dayData = dailyLogs[selectedDate] || {};
+
+            dailyLogContainer.innerHTML = '';
+            if (employees.length === 0) {
+                dailyLogContainer.innerHTML = `<p class="text-muted text-center p-4">Nessun dipendente inserito. Aggiungine uno dalla sezione 'Gestione Dipendenti'.</p>`;
+                return;
+            }
+
+            employees.forEach(emp => {
+                const empData = dayData[emp.id] || {};
+                const logCard = document.createElement('div');
+                logCard.className = 'form-section p-4 rounded-lg';
+                logCard.dataset.employeeId = emp.id;
+                
+                const statuses = ["", "Presente", "Malattia", "Ferie", "Riposo", "Infortunio", "Permesso"];
+                const statusOptions = statuses.map(s => `<option value="${s}" ${empData.status === s ? 'selected' : ''}>${s || 'Seleziona stato...'}</option>`).join('');
+
+                logCard.innerHTML = `
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-4">
+                        <p class="font-bold text-lg mb-2 sm:mb-0">${emp.name}</p>
+                        <div class="w-full sm:w-auto">
+                            <select class="form-input w-full p-2 rounded-md" data-field="status">${statusOptions}</select>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div><label class="block text-sm font-medium mb-1">Forf. Mensile Netto</label><input type="number" class="form-input w-full p-2 rounded-md" data-field="monthlyFlat" value="${empData.monthlyFlat || ''}" placeholder="€"></div>
+                        <div><label class="block text-sm font-medium mb-1">Acconto</label><input type="number" class="form-input w-full p-2 rounded-md" data-field="advance" value="${empData.advance || ''}" placeholder="€"></div>
+                    </div>
+                `;
+                dailyLogContainer.appendChild(logCard);
+            });
+        }
+        
+        dailyLogDateInput.addEventListener('change', renderDailyLog);
+        
+        saveDailyLogBtn.addEventListener('click', () => {
+            const selectedDate = dailyLogDateInput.value;
+            if (!selectedDate) {
+                customAlert('Seleziona una data prima di salvare.');
+                return;
+            }
+            const dailyLogs = db.get('dailyLogs') || {};
+            if (!dailyLogs[selectedDate]) dailyLogs[selectedDate] = {};
+
+            const logCards = dailyLogContainer.querySelectorAll('[data-employee-id]');
+            logCards.forEach(card => {
+                const empId = card.dataset.employeeId;
+                dailyLogs[selectedDate][empId] = {
+                    status: card.querySelector('[data-field="status"]').value,
+                    monthlyFlat: card.querySelector('[data-field="monthlyFlat"]').value,
+                    advance: card.querySelector('[data-field="advance"]').value,
+                };
+            });
+
+            db.set('dailyLogs', dailyLogs);
+            const feedback = document.getElementById('daily-log-save-feedback');
+            feedback.classList.remove('opacity-0');
+            setTimeout(() => feedback.classList.add('opacity-0'), 2000);
+        });
+
+        // --- LOGICA REPORT (AGGIORNATA) ---
+        const generateReportBtn = document.getElementById('generate-report-btn');
+        const printReportBtn = document.getElementById('print-report-btn');
+        const reportOutputContainer = document.getElementById('report-output-container');
+        const reportOutput = document.getElementById('report-output');
+
+        generateReportBtn.addEventListener('click', () => {
+            try {
+                const startDate = new Date(document.getElementById('report-start-date').value);
+                const endDate = new Date(document.getElementById('report-end-date').value);
+
+                if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+                    customAlert('Seleziona un intervallo di date valido.');
+                    return;
+                }
+
+                const employees = db.get('employees') || [];
+                const dailyLogs = db.get('dailyLogs') || {};
+                
+                const monthNames = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
+                const reportMonth = monthNames[startDate.getMonth()];
+                const reportYear = startDate.getFullYear();
+                
+                let daysInMonth = [];
+                for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+                    daysInMonth.push(new Date(d));
+                }
+                
+                const statusMap = {
+                    'Presente': 'P', 'Malattia': 'M', 'Ferie': 'F',
+                    'Riposo': 'R', 'Infortunio': 'I', 'Permesso': 'PE'
+                };
+
+                let reportHTML = `
+                    <h2 class="text-lg font-bold mb-4">Report Presenze ${reportMonth} ${reportYear}</h2>
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr>
+                                <th class="text-left">Dipendente</th>
+                                ${daysInMonth.map(d => `<th class="text-center">${d.getDate()}</th>`).join('')}
+                                <th class="text-center">Tot. Giorni</th>
+                                <th class="text-right">Forfait Netto (€)</th>
+                                <th class="text-right">Acconti (€)</th>
+                                <th class="text-right">Saldo (€)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                if (employees.length === 0) {
+                     reportHTML += `<tr><td colspan="${daysInMonth.length + 5}" class="text-center p-4">Nessun dipendente inserito.</td></tr>`;
+                } else {
+                    employees.forEach(emp => {
+                        let totalDays = 0;
+                        let totalAdvance = 0;
+                        let monthlyNet = 0;
+                        
+                        let daysHTML = '';
+                        daysInMonth.forEach(day => {
+                            const dateString = day.toISOString().split('T')[0];
+                            const log = dailyLogs[dateString] && dailyLogs[dateString][emp.id];
+                            
+                            if (log && log.status) {
+                                daysHTML += `<td class="text-center font-semibold">${statusMap[log.status] || ''}</td>`;
+                                if(log.status === 'Presente'){
+                                    totalDays++;
+                                    totalAdvance += parseFloat(log.advance || 0);
+                                    const flatRate = parseFloat(log.monthlyFlat || 0);
+                                    if (flatRate > 0) {
+                                        monthlyNet = flatRate;
+                                    }
+                                }
+                            } else {
+                                daysHTML += `<td></td>`;
+                            }
+                        });
+                        
+                        const balance = monthlyNet - totalAdvance;
+
+                        reportHTML += `
+                            <tr>
+                                <td class="font-medium">${emp.name}</td>
+                                ${daysHTML}
+                                <td class="text-center font-bold">${totalDays}</td>
+                                <td class="text-right">${monthlyNet > 0 ? monthlyNet.toFixed(2) : '0.00'}</td>
+                                <td class="text-right">${totalAdvance.toFixed(2)}</td>
+                                <td class="text-right font-bold">${balance.toFixed(2)}</td>
+                            </tr>
+                        `;
+                    });
+                }
+
+                reportHTML += `</tbody></table>`;
+                
+                // Aggiungi la legenda
+                reportHTML += `<div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 text-xs">
+                    <span class="font-bold">Legenda:</span> 
+                    ${Object.entries(statusMap).map(([key, value]) => `<strong>${value}</strong> = ${key}`).join(', ')}
+                </div>`;
+
+                reportOutput.innerHTML = reportHTML;
+                reportOutputContainer.classList.remove('hidden');
+            } catch (error) {
+                console.error("Errore durante la generazione del report:", error);
+                customAlert("Si è verificato un errore imprevisto durante la generazione del report. Controlla i dati inseriti.");
+            }
+        });
+        
+        // --- LOGICA DI STAMPA ROBUSTA ---
+        printReportBtn.addEventListener('click', () => {
+            const reportContent = reportOutput.innerHTML;
+            if (!reportContent.trim()) {
+                customAlert("Nessun report da stampare. Genera prima un report.");
+                return;
+            }
+
+            const companyData = db.get('companyData');
+            const companyName = companyData ? companyData['ragione-sociale'] : 'Gestionale Edile Pro';
+
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Stampa Report - ${companyName}</title>
+                        <style>
+                            body { font-family: sans-serif; }
+                            table { width: 100%; border-collapse: collapse; font-size: 8pt; }
+                            th, td { border: 1px solid #ccc; padding: 4px; text-align: left; }
+                            th { background-color: #f2f2f2; }
+                            .text-center { text-align: center; }
+                            .text-right { text-align: right; }
+                            .font-bold { font-weight: bold; }
+                            .font-medium { font-weight: 500; }
+                            .font-semibold { font-weight: 600; }
+                            h2 { font-size: 14pt; margin-bottom: 1rem; }
+                            .mt-4 { margin-top: 1rem; }
+                            .pt-4 { padding-top: 1rem; }
+                            .border-t { border-top: 1px solid #ccc; }
+                            .text-xs { font-size: 8pt; }
+                        </style>
+                    </head>
+                    <body>
+                        ${reportContent}
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.focus();
+            
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+            }, 250);
+        });
+
+
+        // --- AGGIORNAMENTO DINAMICO ALERT DASHBOARD ---
+        const alertsContainer = document.getElementById('alerts-container');
+        function updateDashboardAlerts() {
+            alertsContainer.innerHTML = '';
+            let hasAlerts = false;
+            const oggi = new Date(); oggi.setHours(0, 0, 0, 0);
+
+            const checkAndCreateAlert = (item, type, name = '') => {
+                if (!item.expiry && !item.scadenza) return;
+                const expiryDate = item.expiry || item.scadenza;
+                const scadenza = new Date(expiryDate);
+                const daysRemaining = Math.ceil((scadenza - oggi) / (1000 * 3600 * 24));
+                if (daysRemaining <= 30) {
+                    hasAlerts = true;
+                    let title = '';
+                    switch(type) {
+                        case 'DURC': title = daysRemaining < 0 ? `DURC scaduto da ${Math.abs(daysRemaining)} giorni` : `DURC in scadenza tra ${daysRemaining} giorni`; break;
+                        case 'Contratto': title = daysRemaining < 0 ? `Contratto ${name} scaduto` : `Contratto ${name} in scadenza tra ${daysRemaining} giorni`; break;
+                        case 'Visita': title = daysRemaining < 0 ? `Visita ${name} scaduta` : `Visita ${name} in scadenza tra ${daysRemaining} giorni`; break;
+                        case 'Attestato': title = daysRemaining < 0 ? `Attestato ${name} scaduto` : `Attestato ${name} in scadenza tra ${daysRemaining} giorni`; break;
+                    }
+                    createAlert('file-warning', title, `Data scadenza: ${scadenza.toLocaleDateString('it-IT')}`);
+                }
+            };
+            
+            const companyData = db.get('companyData');
+            if (companyData && companyData['durc-scadenza']) checkAndCreateAlert({ expiry: companyData['durc-scadenza'] }, 'DURC');
+            
+            const employees = db.get('employees') || [];
+            employees.forEach(emp => {
+                checkAndCreateAlert(emp, 'Contratto', emp.name);
+                (emp.visits || []).forEach(visit => checkAndCreateAlert(visit, 'Visita', `${visit.type} (${emp.name})`));
+                (emp.certs || []).forEach(cert => checkAndCreateAlert(cert, 'Attestato', `${cert.name} (${emp.name})`));
+            });
+
+            if (!hasAlerts) alertsContainer.innerHTML = '<p class="text-muted text-sm">Nessuna scadenza imminente.</p>';
+            lucide.createIcons();
+        }
+        function createAlert(icon, title, subtitle) {
+            alertsContainer.innerHTML += `<div class="alert-card p-4 rounded-lg flex items-start"><i data-lucide="${icon}" class="text-red-500 dark:text-red-400 mr-4 mt-1 flex-shrink-0"></i><div><p class="font-semibold">${title}</p><p class="text-sm">${subtitle}</p></div></div>`;
+        }
+
+        // Caricamento iniziale
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            dailyLogDateInput.value = today;
+            loadCompanyData();
+            updateDashboardAlerts();
+        });
+    </script>
+</body>
+</html>
